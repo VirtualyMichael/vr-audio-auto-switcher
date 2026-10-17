@@ -1,0 +1,70 @@
+﻿<ui:FluentWindow x:Class="VrAudioSwitcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="VR Audio Switcher" Width="560" Height="720" MinWidth="480"
+        WindowStartupLocation="CenterScreen" ExtendsContentIntoTitleBar="True"
+        WindowBackdropType="Mica">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TitleBar Title="VR Audio Switcher" Grid.Row="0" ShowMaximize="False" />
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="24,8,24,24">
+                <!-- Status card -->
+                <Border x:Name="StatusCard" CornerRadius="12" Padding="20" Margin="0,0,0,16" Background="#2200A878">
+                    <StackPanel>
+                        <TextBlock x:Name="ModeText" FontSize="26" FontWeight="SemiBold" Text="Desktop mode" />
+                        <TextBlock x:Name="ModeSub" Opacity="0.7" Margin="0,4,0,0" Text="" />
+                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                            <RadioButton x:Name="RbAuto" Content="Auto" GroupName="ov" Margin="0,0,16,0" Checked="Override_Changed" />
+                            <RadioButton x:Name="RbDesktop" Content="Desktop" GroupName="ov" Margin="0,0,16,0" Checked="Override_Changed" />
+                            <RadioButton x:Name="RbVr" Content="VR" GroupName="ov" Checked="Override_Changed" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Desktop profile -->
+                <TextBlock Text="Desktop devices" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <TextBlock Text="Headset / speakers" Opacity="0.7" />
+                <ComboBox x:Name="DeskOut" HorizontalAlignment="Stretch" Margin="0,4,0,10" DisplayMemberPath="Name" SelectionChanged="Profile_Changed" />
+                <TextBlock Text="Microphone" Opacity="0.7" />
+                <ComboBox x:Name="DeskIn" HorizontalAlignment="Stretch" Margin="0,4,0,20" DisplayMemberPath="Name" SelectionChanged="Profile_Changed" />
+
+                <!-- VR profile -->
+                <TextBlock Text="VR devices" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <TextBlock Text="Headset / speakers" Opacity="0.7" />
+                <ComboBox x:Name="VrOut" HorizontalAlignment="Stretch" Margin="0,4,0,10" DisplayMemberPath="Name" SelectionChanged="Profile_Changed" />
+                <TextBlock Text="Microphone" Opacity="0.7" />
+                <ComboBox x:Name="VrIn" HorizontalAlignment="Stretch" Margin="0,4,0,20" DisplayMemberPath="Name" SelectionChanged="Profile_Changed" />
+
+                <!-- Discord -->
+                <TextBlock Text="Discord" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <RadioButton x:Name="DcWindows" GroupName="dc" Content="Native - follow Windows default (no mods)" Checked="Discord_Changed" />
+                <CheckBox x:Name="DcRestart" Margin="24,2,0,6" Content="Restart Discord after switching if it doesn't follow" Click="Discord_Changed" />
+                <RadioButton x:Name="DcBd" GroupName="dc" Content="BetterDiscord plugin (sets Discord devices directly)" Checked="Discord_Changed" />
+                <StackPanel Orientation="Horizontal" Margin="24,6,0,0">
+                    <ui:Button x:Name="InstallBd" Content="Install plugin" Click="InstallBd_Click" />
+                    <TextBlock x:Name="BdStatus" VerticalAlignment="Center" Margin="12,0,0,0" Opacity="0.7" />
+                </StackPanel>
+                <RadioButton x:Name="DcRpc" GroupName="dc" Content="Discord RPC (unmodded, explicit device pick)" Margin="0,10,0,0" Checked="Discord_Changed" />
+                <StackPanel Margin="24,6,0,0">
+                    <ui:TextBox x:Name="RpcId" PlaceholderText="Discord app Client ID" TextChanged="Rpc_TextChanged" Margin="0,0,0,6" />
+                    <ui:TextBox x:Name="RpcSecret" PlaceholderText="Discord app Client Secret" TextChanged="Rpc_TextChanged" />
+                    <TextBlock x:Name="RpcStatus" Opacity="0.7" Margin="0,6,0,0" />
+                    <TextBlock TextWrapping="Wrap" Opacity="0.55" FontSize="12" Margin="0,4,0,0"
+                               Text="One-time setup: discord.com/developers > New Application > OAuth2: add redirect http://127.0.0.1 and copy ID/secret; Installation/App Testers: add your own account." />
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" Opacity="0.55" Margin="0,8,0,20" FontSize="12"
+                           Text="Native mode: set Discord's input/output to &quot;Default&quot; once. BetterDiscord is a client mod and is against Discord's ToS - use at your own risk." />
+
+                <!-- General -->
+                <TextBlock Text="General" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <CheckBox x:Name="AutoStart" Content="Start with Windows (no admin prompt)" Click="AutoStart_Click" />
+                <CheckBox x:Name="StartMin" Content="Start minimized to tray" Click="StartMin_Click" Margin="0,4,0,0" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>
