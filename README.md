@@ -17,3 +17,6 @@ dotnet build -c Release
 ```
 
 Status: early version; Discord modes are not yet verified against live clients.
+
+## Install
+Download `VrAudioSwitcher-Setup-x.y.z.exe` from [Releases](https://github.com/VirtualyMichael/vr-audio-auto-switcher/releases). It installs per-user (no admin prompt) and can add itself to Windows startup. The installer is unsigned, so SmartScreen may show "Unknown publisher": choose *More info > Run anyway*.
