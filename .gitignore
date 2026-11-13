@@ -4,3 +4,7 @@ obj/
 *.user
 dist/
 publish/
+.claude/
+.graphify/
+CLAUDE.md
+.gitattributes
