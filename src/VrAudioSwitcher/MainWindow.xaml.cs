@@ -13,6 +13,8 @@ public partial class MainWindow : FluentWindow
 {
     private readonly SwitchController _c;
     private bool _loading = true;
+    private readonly System.Windows.Threading.DispatcherTimer _statusTimer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private static readonly int[] DelayChoices = { 0, 5, 10, 20, 30 };
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string RunName = "VrAudioSwitcher";
 
@@ -24,7 +26,10 @@ public partial class MainWindow : FluentWindow
         Load();
         _c.ModeChanged += OnModeChanged;
         _c.Rpc.StatusChanged += OnModeChanged;
-        Closed += (_, _) => { _c.ModeChanged -= OnModeChanged; _c.Rpc.StatusChanged -= OnModeChanged; };
+        _c.Proximity.Changed += OnModeChanged;
+        _statusTimer.Tick += (_, _) => RefreshStatus();
+        _statusTimer.Start();
+        Closed += (_, _) => { _statusTimer.Stop(); _c.ModeChanged -= OnModeChanged; _c.Rpc.StatusChanged -= OnModeChanged; _c.Proximity.Changed -= OnModeChanged; };
         _loading = false;
     }
 
@@ -62,6 +67,9 @@ public partial class MainWindow : FluentWindow
         DcRestart.IsChecked = _c.Config.RestartDiscordIfNeeded;
         AutoStart.IsChecked = Registry.CurrentUser.OpenSubKey(RunKey)?.GetValue(RunName) != null;
         StartMin.IsChecked = _c.Config.StartMinimized;
+        Prox.IsChecked = _c.Config.ProximitySwitching;
+        ProxDelay.ItemsSource = DelayChoices.Select(d => d == 0 ? "Immediately" : d + " seconds").ToList();
+        ProxDelay.SelectedIndex = Math.Max(0, Array.IndexOf(DelayChoices, _c.Config.ProximityOffDelaySeconds));
         RefreshStatus();
     }
 
@@ -84,6 +92,7 @@ public partial class MainWindow : FluentWindow
         ModeSub.Text = _c.Config.Override != ModeOverride.Auto ? "Manual override"
             : _c.Detector.VrActive ? "SteamVR is running" : "Waiting for SteamVR";
         StatusCard.Background = new SolidColorBrush(vr ? System.Windows.Media.Color.FromArgb(0x33, 0x7C, 0x5C, 0xFF) : System.Windows.Media.Color.FromArgb(0x22, 0x00, 0xA8, 0x78));
+        ProxStatus.Text = _c.Config.ProximitySwitching ? "Status: " + _c.Proximity.Status : "";
         RpcStatus.Text = "Status: " + _c.Rpc.Status;
         BdStatus.Text = _c.Bridge.ClientCount > 0 ? "Plugin connected" : (IsBdInstalled() ? "Installed - waiting for Discord" : "Not installed");
     }
@@ -126,6 +135,15 @@ public partial class MainWindow : FluentWindow
         if (key == null) return;
         if (AutoStart.IsChecked == true) key.SetValue(RunName, $"\"{Environment.ProcessPath}\"");
         else key.DeleteValue(RunName, false);
+    }
+
+    private void Prox_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        _c.Config.ProximitySwitching = Prox.IsChecked == true;
+        if (ProxDelay.SelectedIndex >= 0) _c.Config.ProximityOffDelaySeconds = DelayChoices[ProxDelay.SelectedIndex];
+        _c.Config.Save();
+        _c.Evaluate(force: true);
     }
 
     private void StartMin_Click(object sender, RoutedEventArgs e)

@@ -5,6 +5,7 @@ Tiny Windows tray app that switches your default headset and mic between a **Des
 - .NET 8 / WPF (Fluent UI), runs as a normal user: no UAC prompt, ever
 - Starts with Windows via the per-user `HKCU\...\Run` key
 - Idle in tray: ~30 MB, ~0% CPU (SteamVR check every 3 s)
+- Optional headset sensor: switches to Desktop when you take the headset off and back to VR when you put it on (via SteamVR)
 - Discord modes:
   - **Native**: follows the Windows default device (set Discord to "Default"); optional Discord restart
   - **Discord RPC**: unmodded, explicit device pick via a free Discord developer app (client ID/secret)

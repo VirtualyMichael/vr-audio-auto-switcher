@@ -25,6 +25,8 @@ public class AppConfig
     public string? DiscordClientSecret { get; set; }
     public string? RpcAccessToken { get; set; }
     public string? RpcRefreshToken { get; set; }
+    public bool ProximitySwitching { get; set; }
+    public int ProximityOffDelaySeconds { get; set; } = 10;
     public bool StartMinimized { get; set; } = true;
     public string BridgeToken { get; set; } = Guid.NewGuid().ToString("N");
 

@@ -60,6 +60,17 @@
                 <TextBlock TextWrapping="Wrap" Opacity="0.55" Margin="0,8,0,20" FontSize="12"
                            Text="Native mode: set Discord's input/output to &quot;Default&quot; once. BetterDiscord is a client mod and is against Discord's ToS - use at your own risk." />
 
+                <!-- Headset sensor -->
+                <TextBlock Text="Headset sensor" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
+                <CheckBox x:Name="Prox" Content="Switch to Desktop when I take the headset off, back to VR when I put it on" Click="Prox_Changed" />
+                <StackPanel Orientation="Horizontal" Margin="24,6,0,0">
+                    <TextBlock Text="Wait before switching to Desktop:" VerticalAlignment="Center" Opacity="0.7" Margin="0,0,10,0" />
+                    <ComboBox x:Name="ProxDelay" Width="120" SelectionChanged="Prox_Changed" />
+                </StackPanel>
+                <TextBlock x:Name="ProxStatus" Opacity="0.7" Margin="24,6,0,4" />
+                <TextBlock TextWrapping="Wrap" Opacity="0.55" Margin="24,0,0,20" FontSize="12"
+                           Text="Uses the proximity sensor via SteamVR. Your headset must report it to SteamVR (Index, Quest via Link/Virtual Desktop and Vive do). Putting it back on switches to VR instantly." />
+
                 <!-- General -->
                 <TextBlock Text="General" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8" />
                 <CheckBox x:Name="AutoStart" Content="Start with Windows (no admin prompt)" Click="AutoStart_Click" />

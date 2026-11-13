@@ -8,6 +8,7 @@ public sealed class SwitchController : IDisposable
     public VrDetector Detector { get; } = new();
     public DiscordBridge Bridge { get; }
     public DiscordRpcClient Rpc { get; }
+    public ProximityMonitor Proximity { get; }
     public bool VrMode { get; private set; }
     public event Action? ModeChanged;
     private readonly object _lock = new();
@@ -18,6 +19,8 @@ public sealed class SwitchController : IDisposable
         Bridge = new DiscordBridge(config.BridgeToken);
         Bridge.Start();
         Rpc = new DiscordRpcClient(config);
+        Proximity = new ProximityMonitor(config);
+        Proximity.Changed += () => Evaluate();
         if (config.Discord == DiscordMode.Rpc) Rpc.Start();
         Detector.Changed += _ => Evaluate();
         Evaluate();
@@ -27,13 +30,14 @@ public sealed class SwitchController : IDisposable
     {
         ModeOverride.Vr => true,
         ModeOverride.Desktop => false,
-        _ => Detector.VrActive
+        _ => Detector.VrActive && (!Config.ProximitySwitching || Proximity.Worn)
     };
 
     public void Evaluate(bool force = false)
     {
         lock (_lock)
         {
+            SyncProximity();
             var vr = EffectiveVr;
             if (!force && vr == VrMode && _applied) return;
             VrMode = vr;
@@ -43,6 +47,13 @@ public sealed class SwitchController : IDisposable
         ModeChanged?.Invoke();
     }
     private bool _applied;
+
+    // Only talk to OpenVR while it can matter: option on, SteamVR up, no manual override.
+    private void SyncProximity()
+    {
+        if (Config.ProximitySwitching && Config.Override == ModeOverride.Auto && Detector.VrActive) Proximity.Start();
+        else Proximity.Stop();
+    }
 
     private void Apply(Profile p)
     {
@@ -55,5 +66,5 @@ public sealed class SwitchController : IDisposable
         else if (changed && Config.RestartDiscordIfNeeded) DiscordBridge.RestartDiscord();
     }
 
-    public void Dispose() { Detector.Dispose(); Bridge.Dispose(); Rpc.Dispose(); }
+    public void Dispose() { Detector.Dispose(); Bridge.Dispose(); Rpc.Dispose(); Proximity.Dispose(); }
 }
